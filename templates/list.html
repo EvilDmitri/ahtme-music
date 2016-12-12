@@ -1,0 +1,88 @@
+{% extends "/templates/base.html" %}
+
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 60%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1 id="">Вся музыка</h1>
+    <div>&nbsp;</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Размер</th>
+                <th>Загружен</th>
+                <th>&nbsp;</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in blobs %}
+		    {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
+
+            <tr>
+                <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
+                <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
+                <td>{{ file.blob.creation }}</td>
+
+                <!--<td class="nowrap"></td>-->
+                <!--<td>-->
+                    <!--<button type="submit" class="btn-danger">Delete</button></td>-->
+                <td>
+
+                    <a href="/delete/{{file.key().id()}}" class="btn btn-danger btn-sm">Удалить</a>
+                </td>
+
+            </tr>
+            {% else %}
+            <tr><td colspan="7">Пока нет музыки</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+{% endblock content %}
+
+{% block footer %}
+    <form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
+		Upload File: <input type="file" name="file"><br> <input type="submit" name="submit" value="Submit">
+	</form>
+{% endblock footer %}
+
+{% block tail_script %}
+    <script>
+        var FormHelpers = {
+            validate: function (form, evt) {
+                // Form validation for modal dialog
+                var example_name = form.find('#example_name').val();
+                var example_description = form.find('#example_description').val();
+                if (!(example_name)) {
+                    evt.preventDefault();
+                    Utils.renderFieldErrorTooltip('#example_name', 'Name is required', 'right');
+                }
+                if (!(example_description)) {
+                    evt.preventDefault();
+                    Utils.renderFieldErrorTooltip('#example_description', 'Description is required', 'right');
+                }
+            },
+            init: function () {
+                var self = this;
+                var example_form = $('#new-example-form');
+                example_form.on('submit', function (evt) {
+                    self.validate(example_form, evt)
+                });
+            }
+        };
+        $(document).ready(function() {
+            FormHelpers.init();
+        });
+    </script>
+{% endblock tail_script %}

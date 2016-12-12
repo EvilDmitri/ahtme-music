@@ -7,8 +7,24 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /content
+  static_dir: content
+
+- url: /delete/.*
+  script: main.app
+#  login: admin
+
+# Obsolete route (retains backward compatibility)
+# See also main.py handler "('/get/([^/]+)?/([^/]+)?', GetHandler)"
+- url: /get/(.*?)/(.*)
+  script: main.app
+
+- url: (^/[0-9]+)/(.*)
+  script: main.app
+
 - url: .*
   script: main.app
+#  login: admin
 
 libraries:
 - name: webapp2

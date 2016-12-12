@@ -1,0 +1,8 @@
+{% for blob in blobs %}
+<div class="row">
+    <b> <a href="/serve/{{blob.key()}} ">{{blob.filename}}</a>
+    </b>
+
+  <blockquote>test quote</blockquote>
+</div>
+{% endfor %}
