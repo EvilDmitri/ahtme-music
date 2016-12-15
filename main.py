@@ -108,10 +108,8 @@ class BaseHandler(webapp2.RequestHandler):
             params = {}
         user = self.user_info
         params['user'] = user
-        path = os.path.join(os.path.dirname(__file__), 'templates', view_filename)
-
-        # template = JINJA_ENVIRONMENT.get_template('templates/main.html')
-        self.response.out.write(template.render(path, params))
+        template = JINJA_ENVIRONMENT.get_template(view_filename)
+        self.response.write(template.render(params))
 
     def display_message(self, message):
         """Utility function to display a template with a simple message."""
@@ -257,7 +255,7 @@ class LoginHandler(BaseHandler):
             'username': username,
             'failed': failed
         }
-        self.render_template('login.html', params)
+        self.render_template('templates/login.html', params)
 
 
 class LogoutHandler(BaseHandler):

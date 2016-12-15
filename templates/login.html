@@ -1,5 +1,4 @@
-{#{% extends "/templates/base.html" %}#}
-
+{% extends "/templates/base.html" %}
 
 {% block content %}
 
@@ -11,12 +10,14 @@
 
     {% endif %}
 
-    <form class="form" action= "/login" method="POST">
-        <label for="username">Пользователь</label>
-        <input type="text" value="{{ username }}" name="username"/>
+    <form class="bs-component" action= "/login" method="POST">
+    <div class="form-group">
+         <label for="username">Имя пользователя</label>
+        <input type="text" value="{{ username }}" name="username" class="form-control"/>
         <label for="password">Пароль</label>
-        <input type="password" name="password"/>
-        <button type="submit" class="btn">Войти</button>
+        <input type="password" name="password" class="form-control"/><br>
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </div>
     </form>
 
 {#    <a href="/forgot">Forgot password</a>#}
