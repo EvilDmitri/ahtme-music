@@ -49,11 +49,27 @@
 
 
 {% block footer %}
-    <form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
-		Upload File: <input type="file" name="file"><br>
-        <input type="hidden" name="collective" value="{{collective}}">
-        <input type="submit" name="submit" value="Submit">
+    <div class="bs-component">
+    <form action="{{upload_url}}" method="POST" enctype="multipart/form-data" class="bs-component">
+        <div class="form-group">
+            <label for="file_input" class="control-label">Добавить:</label>
+{#            <div class="file-upload" data-text="Выберите файл">#}
+{#              <input type="file">#}
+{#            </div>#}
+
+            <input type="file" name="file" class="form-control" id="file_input"><br>
+            <input type="hidden" name="collective" value="{{collective}}">
+            <button type="submit" name="submit" class="btn btn-primary">Отправить</button>
+        </div>
+
 	</form>
+
+{#    <div class="progress">#}
+{#        <div class="progress-bar progress-bar-info" style="width: 80%"></div>#}
+{#    </div>#}
+
+    </div>
+
 {% endblock footer %}
 
 

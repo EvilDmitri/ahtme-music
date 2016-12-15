@@ -1,0 +1,25 @@
+{#{% extends "/templates/base.html" %}#}
+
+
+{% block content %}
+
+    <h1>Войти</h1>
+
+    {% if failed %}
+
+        <strong>Что-то не так!</strong> Проверьте пароль и попробуйте еще раз!
+
+    {% endif %}
+
+    <form class="form" action= "/login" method="POST">
+        <label for="username">Пользователь</label>
+        <input type="text" value="{{ username }}" name="username"/>
+        <label for="password">Пароль</label>
+        <input type="password" name="password"/>
+        <button type="submit" class="btn">Войти</button>
+    </form>
+
+{#    <a href="/forgot">Forgot password</a>#}
+
+
+{% endblock %}
