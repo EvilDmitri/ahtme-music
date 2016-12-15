@@ -90,6 +90,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-Будет удалено .gitignore
-Будет удалено .idea/
-Будет удалено main.pyc
+
+.idea/
+

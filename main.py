@@ -1,6 +1,7 @@
 # coding=utf-8
 import webapp2
 import os
+import os.path
 import urllib
 import logging
 
@@ -13,6 +14,13 @@ from google.appengine.ext.db import EntityNotFoundError
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
+
+
+from webapp2_extras import auth
+from webapp2_extras import sessions
+
+from webapp2_extras.auth import InvalidAuthIdError
+from webapp2_extras.auth import InvalidPasswordError
 
 import jinja2
 
@@ -35,6 +43,96 @@ collectives = {
 }
 
 
+def user_required(handler):
+    """
+    Decorator that checks if there's a user associated with the current session.
+    Will also fail if there's no session present.
+  """
+
+    def check_login(self, *args, **kwargs):
+        auth = self.auth
+        if not auth.get_user_by_session():
+            self.redirect(self.uri_for('login'), abort=True)
+        else:
+            return handler(self, *args, **kwargs)
+
+    return check_login
+
+
+class BaseHandler(webapp2.RequestHandler):
+    @webapp2.cached_property
+    def auth(self):
+        """Shortcut to access the auth instance as a property."""
+        return auth.get_auth()
+
+    @webapp2.cached_property
+    def user_info(self):
+        """Shortcut to access a subset of the user attributes that are stored
+    in the session.
+
+    The list of attributes to store in the session is specified in
+      config['webapp2_extras.auth']['user_attributes'].
+    :returns
+      A dictionary with most user information
+    """
+        return self.auth.get_user_by_session()
+
+    @webapp2.cached_property
+    def user(self):
+        """Shortcut to access the current logged in user.
+
+    Unlike user_info, it fetches information from the persistence layer and
+    returns an instance of the underlying model.
+
+    :returns
+      The instance of the user model associated to the logged in user.
+    """
+        u = self.user_info
+        return self.user_model.get_by_id(u['user_id']) if u else None
+
+    @webapp2.cached_property
+    def user_model(self):
+        """Returns the implementation of the user model.
+
+    It is consistent with config['webapp2_extras.auth']['user_model'], if set.
+    """
+        return self.auth.store.user_model
+
+    @webapp2.cached_property
+    def session(self):
+        """Shortcut to access the current session."""
+        return self.session_store.get_session(backend="datastore")
+
+    def render_template(self, view_filename, params=None):
+        if not params:
+            params = {}
+        user = self.user_info
+        params['user'] = user
+        path = os.path.join(os.path.dirname(__file__), 'templates', view_filename)
+
+        # template = JINJA_ENVIRONMENT.get_template('templates/main.html')
+        self.response.out.write(template.render(path, params))
+
+    def display_message(self, message):
+        """Utility function to display a template with a simple message."""
+        params = {
+            'message': message
+        }
+        self.render_template('/templates/message.html', params)
+
+    # this is needed for webapp2 sessions to work
+    def dispatch(self):
+        # Get a session store for this request.
+        self.session_store = sessions.get_store(request=self.request)
+
+        try:
+            # Dispatch the request.
+            webapp2.RequestHandler.dispatch(self)
+        finally:
+            # Save all sessions.
+            self.session_store.save_sessions(self.response)
+
+
 class UserMusic(db.Model):
     user = db.StringProperty()
     blob = blobstore.BlobReferenceProperty()
@@ -47,7 +145,7 @@ class UserMusic(db.Model):
 #     blob = blobstore.BlobReferenceProperty()
 
 
-class MainHandler(webapp2.RequestHandler):
+class MainHandler(BaseHandler):
     def get(self):
         template_values = {
             'blobs': blobstore.BlobInfo.all()
@@ -138,12 +236,53 @@ class DeleteHandler(webapp2.RequestHandler):
         self.redirect('/')
 
 
+class LoginHandler(BaseHandler):
+    def get(self):
+        self._serve_page()
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        try:
+            u = self.auth.get_user_by_password(username, password, remember=True,
+                                               save_session=True)
+            self.redirect(self.uri_for('home'))
+        except (InvalidAuthIdError, InvalidPasswordError) as e:
+            logging.info('Login failed for user %s because of %s', username, type(e))
+            self._serve_page(True)
+
+    def _serve_page(self, failed=False):
+        username = self.request.get('username')
+        params = {
+            'username': username,
+            'failed': failed
+        }
+        self.render_template('login.html', params)
+
+
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.auth.unset_session()
+        self.redirect(self.uri_for('home'))
+
+config = {
+    'webapp2_extras.auth': {
+        'user_model': 'models.User',
+        'user_attributes': ['name']
+    },
+    'webapp2_extras.sessions': {
+        'secret_key': 'MY_SECRET_KEY'
+    }
+}
+
+
 app = webapp2.WSGIApplication([('/', MainHandler),
                                ('/collective/([^/]+)?', CollectiveHandler),
                                ('/upload', UploadHandler),
                                ('/delete/([^/]+)?', DeleteHandler),
                                ('/([^/]+)?/([^/]+)?', GetHandler),
-
+                               ('/login', LoginHandler),
+                               ('/logout', LogoutHandler),
                                # Obsolete route handler (retains backward compatibility)
                                # See also app.yaml config "url: /get/(.*?)/(.*)"
-                               ('/get/([^/]+)?/([^/]+)?', GetHandler)], debug=True)
+                               ('/get/([^/]+)?/([^/]+)?', GetHandler)], debug=True, config=config)
