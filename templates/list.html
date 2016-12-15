@@ -8,7 +8,7 @@
 
 {% block content %}
 
-    <h1 id="">Вся музыка</h1>
+    <h1 id="">Вся музыка коллектива {{collective_name}}</h1>
     <div>&nbsp;</div>
     <table class="table table-bordered table-striped">
         <thead>
@@ -45,17 +45,17 @@
         </tbody>
     </table>
 
-
-
-
-
 {% endblock content %}
+
 
 {% block footer %}
     <form action="{{upload_url}}" method="POST" enctype="multipart/form-data">
-		Upload File: <input type="file" name="file"><br> <input type="submit" name="submit" value="Submit">
+		Upload File: <input type="file" name="file"><br>
+        <input type="hidden" name="collective" value="{{collective}}">
+        <input type="submit" name="submit" value="Submit">
 	</form>
 {% endblock footer %}
+
 
 {% block tail_script %}
     <script>

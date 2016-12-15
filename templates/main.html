@@ -1,0 +1,60 @@
+{% extends "/templates/base.html" %}
+
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 60%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1 id="">Вся музыка клуба "Ахтме"</h1>
+    <div>&nbsp;</div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Размер</th>
+                <th>Загружен</th>
+                <th>&nbsp;</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for blob in blobs %}
+		    {% set url = "/" + (blob.key() | string) + "/" + blob.filename %}
+
+            <tr>
+                <td><a href="{{ url }}">{{ blob.filename}}</a></td>
+                <td>{{ ((((((blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
+                <td>{{ blob.creation }}</td>
+
+                <!--<td class="nowrap"></td>-->
+                <!--<td>-->
+                    <!--<button type="submit" class="btn-danger">Delete</button></td>-->
+                <td>
+
+
+                </td>
+
+            </tr>
+            {% else %}
+            <tr><td colspan="7">Пока нет музыки</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+
+
+{% endblock content %}
+
+{% block footer %}
+
+{% endblock footer %}
+
+{% block tail_script %}
+
+{% endblock tail_script %}

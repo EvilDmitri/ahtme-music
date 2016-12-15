@@ -1,3 +1,4 @@
+# coding=utf-8
 import webapp2
 import os
 import urllib
@@ -15,15 +16,29 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 import jinja2
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'],
     autoescape=True)
 
+collectives = {
+    'antares': 'Антарес',
+    'arlekin': 'Арлекин',
+    'step': 'Степ-студия',
+    'viva': 'Viva Dance',
+    'smirnov': 'Смирнов'
+
+}
+
 
 class UserMusic(db.Model):
-    user = ndb.StringProperty()
+    user = db.StringProperty()
     blob = blobstore.BlobReferenceProperty()
+    blob_key = ndb.BlobKeyProperty()
 
 
 # class UserMusic(ndb.Model):
@@ -37,33 +52,32 @@ class MainHandler(webapp2.RequestHandler):
         template_values = {
             'blobs': blobstore.BlobInfo.all()
         }
-
-        template = JINJA_ENVIRONMENT.get_template('templates/list.html')
+        template = JINJA_ENVIRONMENT.get_template('templates/main.html')
         self.response.write(template.render(template_values))
-
 
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
-        # try:
-        #     upload = self.get_uploads()[0]
-        #     user_music = UserMusic(
-        #         user='antares',
-        #         # user=users.get_current_user().user_id(),
-        #         # blob=upload,
-        #         # blob_key=upload.key())
-        #         blob=upload)
-        #
-        #     print user_music
-        #     user_music.put()
-        #     self.redirect('/')
-        # except:
-        #     self.error(500)
+        collective = self.request.get('collective')
+        try:
+            upload = self.get_uploads()[0]
+            user_music = UserMusic(
+                user=collective,
+                # test='test field',
+                # user=users.get_current_user().user_id(),
+                blob=upload,
+                blob_key=upload.key())
 
-            # blob_info = self.get_uploads('file')[0]  # 'file' is file upload field in the form
-            # record = FileRecord(blob=blob_info)
-            # record.put()
-        self.redirect('/')
+            print user_music
+            user_music.put()
+            self.redirect('/collective/' + collective)
+        except:
+            self.error(500)
+
+        # blob_info = self.get_uploads('file')[0]  # 'file' is file upload field in the form
+        # record = FileRecord(blob=blob_info)
+        # record.put()
+        # self.redirect('/')
 
 
 class GetHandler(blobstore_handlers.BlobstoreDownloadHandler):
@@ -82,48 +96,6 @@ class GetHandler(blobstore_handlers.BlobstoreDownloadHandler):
         self.send_blob(record.blob)
 
 
-#
-# class RemoveBLob(webapp.RequestHandler):
-#     def get(self):
-#         print self.request.get('key')
-#         #
-#         # blob_key = str(urllib.unquote(blob_key))
-#         # if not blobstore.get(blob_key):
-#         #     self.error(404)
-#         # else:
-#         #     print blob_key
-#         #     blobstore.delete(blob_key)
-
-
-class MainPage(webapp2.RequestHandler):
-    def getRecordDate(self, item):
-        # creation = None
-        # try:
-        #     creation = item.blob.creation
-        # except EntityNotFoundError:
-        #     pass
-        return item.blob.creation
-
-    def get(self):
-        # for b in blobstore.BlobInfo.all():
-        #     self.response.out.write('<li><a href="/serve/%s' % str(b.key()) + '">' + str(b.filename) + '</a>')
-        # blobs = blobstore.BlobInfo.all()
-
-        # files = sorted(UserMusic.query())
-        files = sorted(UserMusic.all())
-        # files = sorted(UserMusic.all(), key=self.getRecordDate, reverse=True)
-        print files
-
-        template_values = {
-            # 'user': user,
-            'blobs': files,
-            'upload_url': blobstore.create_upload_url('/upload')
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('templates/list.html')
-        self.response.write(template.render(template_values))
-
-
 class CollectiveHandler(webapp2.RequestHandler):
     def getRecordDate(self, item):
         # creation = None
@@ -133,20 +105,20 @@ class CollectiveHandler(webapp2.RequestHandler):
         #     pass
         return item.blob.creation
 
-    def get(self):
-        # for b in blobstore.BlobInfo.all():
-        #     self.response.out.write('<li><a href="/serve/%s' % str(b.key()) + '">' + str(b.filename) + '</a>')
-        # blobs = blobstore.BlobInfo.all()
-
+    def get(self, collective):
         # files = sorted(UserMusic.query())
-        files = sorted(UserMusic.all())
+        # files = sorted(UserMusic.all())
+        files = UserMusic.all()
+        files.filter('user =', collective)
         # files = sorted(UserMusic.all(), key=self.getRecordDate, reverse=True)
         print files
 
         template_values = {
             # 'user': user,
             'blobs': files,
-            'upload_url': blobstore.create_upload_url('/upload')
+            'upload_url': blobstore.create_upload_url('/upload'),
+            'collective': collective,
+            'collective_name': collectives[collective]
         }
 
         template = JINJA_ENVIRONMENT.get_template('templates/list.html')
@@ -166,7 +138,7 @@ class DeleteHandler(webapp2.RequestHandler):
         self.redirect('/')
 
 
-app = webapp2.WSGIApplication([('/', MainPage),
+app = webapp2.WSGIApplication([('/', MainHandler),
                                ('/collective/([^/]+)?', CollectiveHandler),
                                ('/upload', UploadHandler),
                                ('/delete/([^/]+)?', DeleteHandler),
