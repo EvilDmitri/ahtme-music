@@ -38,7 +38,11 @@ collectives = {
     'arlekin': 'Арлекин',
     'step': 'Степ-студия',
     'viva': 'Viva Dance',
-    'smirnov': 'Смирнов'
+    'smirnov': 'Смирнов',
+    'oxana': 'Оксана',
+    'jelena': 'Елена',
+    'iren': 'Ирен'
+
 
 }
 
@@ -222,7 +226,7 @@ class CollectiveHandler(webapp2.RequestHandler):
 
 
 class DeleteHandler(webapp2.RequestHandler):
-    def get(self, blob_key):
+    def get(self, blob_key, collective):
         try:
             blob_key = urllib.unquote(blob_key)
             record = UserMusic.get_by_id(int(blob_key))
@@ -231,7 +235,7 @@ class DeleteHandler(webapp2.RequestHandler):
             record.delete()
         except:
             self.error(404)
-        self.redirect('/')
+        self.redirect('/collective/'+collective)
 
 
 class LoginHandler(BaseHandler):
@@ -277,7 +281,7 @@ config = {
 app = webapp2.WSGIApplication([('/', MainHandler),
                                ('/collective/([^/]+)?', CollectiveHandler),
                                ('/upload', UploadHandler),
-                               ('/delete/([^/]+)?', DeleteHandler),
+                               ('/delete/([^/]+)/([^/]+)??', DeleteHandler),
                                ('/([^/]+)?/([^/]+)?', GetHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),
