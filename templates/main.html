@@ -22,13 +22,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for blob in blobs %}
-		    {% set url = "/" + (blob.key() | string) + "/" + blob.filename %}
+            {% for file in blobs %}
+		    {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
 
             <tr>
-                <td><a href="{{ url }}">{{ blob.filename}}</a></td>
-                <td>{{ ((((((blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
-                <td>{{ blob.creation }}</td>
+                <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
+                <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
+                <td>{{ file.blob.creation }}</td>
 
                 <!--<td class="nowrap"></td>-->
                 <!--<td>-->

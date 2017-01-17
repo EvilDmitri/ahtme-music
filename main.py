@@ -149,8 +149,9 @@ class UserMusic(db.Model):
 
 class MainHandler(BaseHandler):
     def get(self):
+        files = UserMusic.all()
         template_values = {
-            'blobs': blobstore.BlobInfo.all()
+            'blobs': files
         }
         template = JINJA_ENVIRONMENT.get_template('templates/main.html')
         self.response.write(template.render(template_values))
@@ -211,7 +212,7 @@ class CollectiveHandler(webapp2.RequestHandler):
         files = UserMusic.all()
         files.filter('user =', collective)
         # files = sorted(UserMusic.all(), key=self.getRecordDate, reverse=True)
-        print files
+        # print files
 
         template_values = {
             # 'user': user,
