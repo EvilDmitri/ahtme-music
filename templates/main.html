@@ -8,42 +8,55 @@
 
 {% block content %}
 
-    <h1 id="">Вся музыка клуба "Ахтме"</h1>
+    <h1 id="header">Музыкальная страница клуба "Ахтме"</h1>
     <div>&nbsp;</div>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Размер</th>
-                <th>Загружен</th>
-                <th>&nbsp;</th>
+    <h2 id="welcome">Выберите коллектив</h2>
+
+    <ul class="">
+      <li><a href="/collective/antares"><h2>Антарес</h2></a></li>
+      <li><a href="/collective/arlekin"><h2>Арлекин</h2></a></li>
+      <li><a href="/collective/step"><h2>Степ</h2></a></li>
+      <li><a href="/collective/viva"><h2>VivaDance</h2></a></li>
+      <li><a href="/collective/smirnov"><h2>Смирнов</h2></a></li>
+      <li><a href="/collective/oxana"><h2>Оксана</h2></a></li>
+      <li><a href="/collective/jelena"><h2>Елена</h2></a></li>
+      <li><a href="/collective/iren"><h2>Ирена</h2></a></li>
+    </ul>
+
+    <!--<table class="table table-bordered table-striped">-->
+        <!--<thead>-->
+            <!--<tr>-->
+                <!--<th>Название</th>-->
+                <!--<th>Размер</th>-->
+                <!--<th>Загружен</th>-->
+                <!--<th>Владелец</th>-->
 
 
-            </tr>
-        </thead>
-        <tbody>
-            {% for file in blobs %}
-		    {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
+            <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+            <!--{% for file in blobs %}-->
+		    <!--{% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}-->
 
-            <tr>
-                <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
-                <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
-                <td>{{ file.blob.creation }}</td>
+            <!--<tr>-->
+                <!--<td><a href="{{ url }}">{{ file.blob.filename}}</a></td>-->
+                <!--<td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>-->
+                <!--<td>{{ file.blob.creation }}</td>-->
 
-                <!--<td class="nowrap"></td>-->
+                <!--&lt;!&ndash;<td class="nowrap"></td>&ndash;&gt;-->
+                <!--&lt;!&ndash;<td>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<button type="submit" class="btn-danger">Delete</button></td>&ndash;&gt;-->
                 <!--<td>-->
-                    <!--<button type="submit" class="btn-danger">Delete</button></td>-->
-                <td>
+                    <!--{{ file.user}}-->
 
+                <!--</td>-->
 
-                </td>
-
-            </tr>
-            {% else %}
-            <tr><td colspan="7">Пока нет музыки</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <!--</tr>-->
+            <!--{% else %}-->
+            <!--<tr><td colspan="7">Пока нет музыки</td></tr>-->
+            <!--{% endfor %}-->
+        <!--</tbody>-->
+    <!--</table>-->
 
 
 

@@ -41,7 +41,7 @@ collectives = {
     'smirnov': 'Смирнов',
     'oxana': 'Оксана',
     'jelena': 'Елена',
-    'iren': 'Ирен'
+    'irena': 'Ирена'
 
 
 }
