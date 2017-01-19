@@ -23,6 +23,12 @@
     <link rel="shortcut icon" href="/static/img/favicon.ico" />
     {% block style_block %}{# page-specific CSS #}{% endblock %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/{{ modernizer_version }}/modernizr.min.js"></script>{# Modernizr must be here, above body tag. #}
+
+    <link href="/static/css/uploadfile.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <!--<script src="http://hayageek.github.io/jQuery-Upload-File/4.0.10/jquery.uploadfile.min.js"></script>-->
+    <script src="/static/js/UploadFile.js"></script>
+
     {% block head_script %}{# defer-incapable JS block #}{% endblock %}
 </head>
 <body>
@@ -40,7 +46,7 @@
             {% block footer %}{% endblock %}
         </div><!-- /footer -->
     </footer>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/{{ jquery_version }}/jquery.min.js"></script>-->
     <script src="//netdna.bootstrapcdn.com/bootstrap/{{ bootstrap_version }}/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/parsley.js/{{ parsley_version }}/parsley-standalone.min.js"></script>
     <script src="/static/js/main.js"></script>

@@ -2,104 +2,144 @@
 
 {% block style_block %}
     <style type="text/css">
-        table.table { width: 60%; }
+        /*table.table { width: 60%; }*/
     </style>
 {% endblock %}
 
 {% block content %}
 
-    <h1 id="">Музыка - {{collective_name}}</h1>
-    <div>&nbsp;</div>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Название</th>
-                <th>Размер</th>
-                <th>Загружен</th>
-                <th>&nbsp;</th>
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-8 col-sm-8 col-xs-6">
+                <div>
+                    <h1 id="">Музыка - {{collective_name}}</h1>
+                </div>
+                <table class="table table-bordered table-striped" >
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th></th>
+                        <th></th>
+                        <th>Размер</th>
+                        <th>Загружен</th>
+                        <th>&nbsp;</th>
 
 
-            </tr>
-        </thead>
-        <tbody>
-            {% for file in blobs %}
-		    {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in blobs %}
+                    {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
 
-            <tr>
-                <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
-                <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
-                <td>{{ file.blob.creation }}</td>
+                    <tr>
+                        <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
+                        <td><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
+                        <!--<td><a href="{{ url }}"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></a></td>-->
+                        <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
+                        <td>{{ file.blob.creation }}</td>
 
-                <!--<td class="nowrap"></td>-->
-                <!--<td>-->
-                    <!--<button type="submit" class="btn-danger">Delete</button></td>-->
-                <td>
-                    <!--
-                    <a href="/delete/{{file.key().id()}}" class="btn btn-danger btn-sm">Удалить</a>
-                    -->
-                </td>
+                        <!--<td class="nowrap"></td>-->
+                        <!--<td>-->
+                            <!--<button type="submit" class="btn-danger">Delete</button></td>-->
+                        <td>
+                            <!--
+                            <a href="/delete/{{file.key().id()}}" class="btn btn-danger btn-sm">Удалить</a>
+                            -->
+                        </td>
 
-            </tr>
-            {% else %}
-            <tr><td colspan="7">Пока нет музыки</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7">Пока нет музыки</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+
+
+            <div class="col-md-4 col-sm-4 col-xs-6">
+                <div><br></div>
+                <div id="fileuploader">Upload</div>
+            </div>
+
+        </div>
+</div>
+
+
+
+
+
 
 {% endblock content %}
 
 
 {% block footer %}
-    <div class="bs-component">
-    <form action="{{upload_url}}" method="POST" enctype="multipart/form-data" class="bs-component">
-        <div class="form-group">
-            <label for="file_input" class="control-label">Добавить:</label>
-{#            <div class="file-upload" data-text="Выберите файл">#}
-{#              <input type="file">#}
-{#            </div>#}
 
-            <input type="file" name="file" class="form-control" id="file_input"><br>
-            <input type="hidden" name="collective" value="{{collective}}">
-            <button type="submit" name="submit" class="btn btn-primary">Отправить</button>
-        </div>
 
-	</form>
 
-{#    <div class="progress">#}
-{#        <div class="progress-bar progress-bar-info" style="width: 80%"></div>#}
-{#    </div>#}
+<!--<hr>-->
+    <!--<div class="bs-component">-->
+    <!--<form action="{{upload_url}}" method="POST" enctype="multipart/form-data" class="bs-component">-->
+        <!--<div class="form-group">-->
+            <!--<label for="file_input" class="control-label">Добавить:</label>-->
+<!--{#            <div class="file-upload" data-text="Выберите файл">#}-->
+<!--{#              <input type="file">#}-->
+<!--{#            </div>#}-->
 
-    </div>
+            <!--<input type="file" name="file" class="form-control" id="file_input"><br>-->
+            <!--<input type="hidden" name="collective" value="{{collective}}">-->
+            <!--<button type="submit" name="submit" class="btn btn-primary">Отправить</button>-->
+        <!--</div>-->
+
+	<!--</form>-->
+
+   <!--<div class="progress">-->
+        <!--<div class="progress-bar progress-bar-info" style="width: 10%"></div>-->
+   <!--</div>-->
+
+    <!--</div>-->
 
 {% endblock footer %}
 
 
 {% block tail_script %}
     <script>
-        var FormHelpers = {
-            validate: function (form, evt) {
-                // Form validation for modal dialog
-                var example_name = form.find('#example_name').val();
-                var example_description = form.find('#example_description').val();
-                if (!(example_name)) {
-                    evt.preventDefault();
-                    Utils.renderFieldErrorTooltip('#example_name', 'Name is required', 'right');
-                }
-                if (!(example_description)) {
-                    evt.preventDefault();
-                    Utils.renderFieldErrorTooltip('#example_description', 'Description is required', 'right');
-                }
-            },
-            init: function () {
-                var self = this;
-                var example_form = $('#new-example-form');
-                example_form.on('submit', function (evt) {
-                    self.validate(example_form, evt)
-                });
-            }
-        };
-        $(document).ready(function() {
-            FormHelpers.init();
+        $(document).ready(function()
+        {
+            $("#fileuploader").uploadFile({
+            url:"{{upload_url}}",
+            multiple:false,
+            dragDrop:false,
+            maxFileCount:1,
+            fileName:"myfile",
+            formData: { collective: '{{collective}}' }
+            });
         });
+
+//        var FormHelpers = {
+//            validate: function (form, evt) {
+//                // Form validation for modal dialog
+//                var example_name = form.find('#example_name').val();
+//                var example_description = form.find('#example_description').val();
+//                if (!(example_name)) {
+//                    evt.preventDefault();
+//                    Utils.renderFieldErrorTooltip('#example_name', 'Name is required', 'right');
+//                }
+//                if (!(example_description)) {
+//                    evt.preventDefault();
+//                    Utils.renderFieldErrorTooltip('#example_description', 'Description is required', 'right');
+//                }
+//            },
+//            init: function () {
+//                var self = this;
+//                var example_form = $('#new-example-form');
+//                example_form.on('submit', function (evt) {
+//                    self.validate(example_form, evt)
+//                });
+//            }
+//        };
+//        $(document).ready(function() {
+//            FormHelpers.init();
+//        });
     </script>
 {% endblock tail_script %}
