@@ -33,7 +33,7 @@
                     {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
 
                     <tr>
-                        <td><a href="{{ url }}">{{ file.blob.filename}}</a></td>
+                        <td><a href="{{ url }}" onclick="play('{{ url }}')">{{ file.blob.filename}}</a></td>
                         <td><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
                         <!--<td><a href="{{ url }}"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></a></td>-->
                         <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
@@ -75,6 +75,23 @@
 
 {% block footer %}
 
+	<!-- Задний прозрачный фон-->
+		<div onclick="stopPlay()" id="wrap"></div>
+
+					<!-- Само окно-->
+			<div id="window">
+						 <!-- Картинка крестика-->
+				<div class="close button" onclick="stopPlay()">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true" style="color:antiquewhite"></span>
+                </div>
+
+						<!-- Music -->
+                <iframe src="" style="zoom:0.60" width="99.6%" height="250" frameborder="0"></iframe>
+
+			</div>
+
+
+
 
 
 <!--<hr>-->
@@ -115,6 +132,25 @@
             formData: { collective: '{{collective}}' }
             });
         });
+
+
+    function play(url) {
+        event.preventDefault();
+        var frameSrc = url;
+        $('iframe').attr("src",frameSrc);
+        document.getElementById('window').style.display = 'block';
+        document.getElementById('wrap').style.display = 'block';
+
+    }
+
+    function stopPlay() {
+        $('iframe').attr("src", '');
+        document.getElementById('window').style.display = 'none';
+        document.getElementById('wrap').style.display = 'none';
+    }
+
+
+
 
 //        var FormHelpers = {
 //            validate: function (form, evt) {
