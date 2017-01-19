@@ -149,12 +149,12 @@ class UserMusic(db.Model):
 
 class MainHandler(BaseHandler):
     def get(self):
-        files = UserMusic.all()
-        template_values = {
-            'blobs': files
-        }
+        # files = UserMusic.all()
+        # template_values = {
+        #     'blobs': files
+        # }
         template = JINJA_ENVIRONMENT.get_template('templates/main.html')
-        self.response.write(template.render(template_values))
+        self.response.write(template.render())
 
 
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
@@ -199,20 +199,20 @@ class GetHandler(blobstore_handlers.BlobstoreDownloadHandler):
 
 class CollectiveHandler(webapp2.RequestHandler):
     def getRecordDate(self, item):
-        # creation = None
-        # try:
-        #     creation = item.blob.creation
-        # except EntityNotFoundError:
-        #     pass
-        return item.blob.creation
+        creation = None
+        try:
+            creation = item.blob.creation
+        except EntityNotFoundError:
+            pass
+        return creation
 
     def get(self, collective):
         # files = sorted(UserMusic.query())
         # files = sorted(UserMusic.all())
         files = UserMusic.all()
         files.filter('user =', collective)
-        # files = sorted(UserMusic.all(), key=self.getRecordDate, reverse=True)
-        # print files
+        files = sorted(files, key=self.getRecordDate, reverse=True)
+        print files
 
         template_values = {
             # 'user': user,
