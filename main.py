@@ -197,7 +197,7 @@ class GetHandler(blobstore_handlers.BlobstoreDownloadHandler):
         self.send_blob(record.blob)
 
 
-class CollectiveHandler(webapp2.RequestHandler):
+class CollectiveHandler(BaseHandler):
     def getRecordDate(self, item):
         creation = None
         try:
@@ -212,15 +212,17 @@ class CollectiveHandler(webapp2.RequestHandler):
         files = UserMusic.all()
         files.filter('user =', collective)
         files = sorted(files, key=self.getRecordDate, reverse=True)
-        print files
 
         template_values = {
             # 'user': user,
             'blobs': files,
             'upload_url': blobstore.create_upload_url('/upload'),
             'collective': collective,
-            'collective_name': collectives[collective]
+            'collective_name': collectives[collective],
+            'user': self.user.auth_ids[0]
         }
+
+        print self.user.auth_ids[0]
 
         template = JINJA_ENVIRONMENT.get_template('templates/list.html')
         self.response.write(template.render(template_values))
@@ -246,10 +248,11 @@ class LoginHandler(BaseHandler):
     def post(self):
         username = self.request.get('username')
         password = self.request.get('password')
+        print password, username
         try:
             u = self.auth.get_user_by_password(username, password, remember=True,
                                                save_session=True)
-            self.redirect(self.uri_for('home'))
+            self.redirect('/')
         except (InvalidAuthIdError, InvalidPasswordError) as e:
             logging.info('Login failed for user %s because of %s', username, type(e))
             self._serve_page(True)
@@ -268,6 +271,43 @@ class LogoutHandler(BaseHandler):
         self.auth.unset_session()
         self.redirect(self.uri_for('home'))
 
+
+class SignupHandler(BaseHandler):
+    def get(self):
+        self.render_template('templates/signup.html')
+
+    def post(self):
+        user_name = self.request.get('username')
+        email = self.request.get('email')
+        name = self.request.get('name')
+        password = self.request.get('password')
+        last_name = self.request.get('lastname')
+
+        unique_properties = ['email_address']
+        user_data = self.user_model.create_user(user_name,
+                                                unique_properties,
+                                                email_address=email, name=name, password_raw=password,
+                                                last_name=last_name, verified=True)
+        if not user_data[0]:  # user_data is a tuple
+            self.display_message('Unable to create user for email %s because of \
+        duplicate keys %s' % (user_name, user_data[1]))
+            return
+
+        user = user_data[1]
+        # user_id = user.get_id()
+        user.put()
+
+        # token = self.user_model.create_signup_token(user_id)
+        #
+        # verification_url = self.uri_for('verification', type='v', user_id=user_id,
+        #                                 signup_token=token, _full=True)
+        #
+        # msg = 'Send an email to user in order to verify their address. \
+        #   They will be able to do so by visiting <a href="{url}">{url}</a>'
+        #
+        # self.display_message(msg.format(url=verification_url))
+
+
 config = {
     'webapp2_extras.auth': {
         'user_model': 'models.User',
@@ -284,6 +324,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                                ('/upload', UploadHandler),
                                ('/delete/([^/]+)/([^/]+)??', DeleteHandler),
                                ('/([^/]+)?/([^/]+)?', GetHandler),
+                               ('/signup', SignupHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),
                                # Obsolete route handler (retains backward compatibility)
