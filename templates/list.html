@@ -18,11 +18,11 @@
                 <table class="table table-bordered table-striped" >
                 <thead>
                     <tr>
-                        <th>Название</th>
-                        <th></th>
-                        <th>Размер</th>
-                        <th>Загружен</th>
-                        <th>&nbsp;</th>
+                        <th class="text-center">Название</th>
+                        <th class="text-center">Скачать</th>
+                        <th class="text-center">Размер</th>
+                        <th class="text-center">Загружен</th>
+                        <th class="text-center">&nbsp;</th>
 
 
                     </tr>
@@ -32,15 +32,10 @@
                     {% set url = "/" + (file.key().id() | string) + "/" + file.blob.filename %}
 
                     <tr>
-                        <td><a href="{{ url }}" onclick="play('{{ url }}')">{{ file.blob.filename}}</a></td>
-                        <td><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a></td>
-                        <!--<td><a href="{{ url }}"><span class="glyphicon glyphicon-headphones" aria-hidden="true"></span></a></td>-->
-                        <td>{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
-                        <td>{{ file.blob.creation }}</td>
-
-                        <!--<td class="nowrap"></td>-->
-                        <!--<td>-->
-                            <!--<button type="submit" class="btn-danger">Delete</button></td>-->
+                        <td  class="song text-center" onclick="play('{{ url }}')"><a >{{ file.blob.filename}}</a></td>
+                        <td class="text-center"><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt text-center" aria-hidden="true"></span></a></td>
+                        <td class="text-center">{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
+                        <td class="text-center"><span class=" date">{{ file.blob.creation }}</span></td>
                         <td>
                             <!--
                             <a href="/delete/{{file.key().id()}}" class="btn btn-danger btn-sm">Удалить</a>
@@ -85,7 +80,7 @@
                 </div>
 
 						<!-- Music -->
-                <iframe src="" style="zoom:0.60" width="99.6%" height="250" frameborder="0"></iframe>
+                <iframe src="" style="zoom:0.60" width="99.6%" height="100" frameborder="0"></iframe>
 
 			</div>
 
@@ -134,9 +129,10 @@
 
 
     function play(url) {
-        event.preventDefault();
-        var frameSrc = url;
-        $('iframe').attr("src",frameSrc);
+        console.log('play');
+//        event.defaultPrevented;
+//        event.preventDefault();
+        $('iframe').attr("src",url);
         document.getElementById('window').style.display = 'block';
         document.getElementById('wrap').style.display = 'block';
 
@@ -147,6 +143,22 @@
         document.getElementById('window').style.display = 'none';
         document.getElementById('wrap').style.display = 'none';
     }
+
+    function removeTime() {
+//       var frameSrc = url;
+//       $('iframe').attr("src",frameSrc);
+//       document.getElementById('window').style.display = 'block';
+//       document.getElementById('wrap').style.display = 'block';
+    }
+
+    var dates = document.getElementsByClassName("date");
+    for (var i = 0; i < dates.length; i++) {
+        var date = $(dates[i]).html();
+        date = date.split('.')[0];
+        $(dates[i]).html(date);
+    }
+
+
 
 
 

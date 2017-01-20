@@ -97,7 +97,7 @@
 
 #window{
     width: 400px;
-    height: 220px;
+    height: 200px;
     margin: 50px auto;
     display: none;
     background: #000;
@@ -113,5 +113,9 @@
 .close{
     margin-left: 364px;
     margin-top: 4px;
+    cursor: pointer;
+}
+
+.song{
     cursor: pointer;
 }
