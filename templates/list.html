@@ -38,13 +38,13 @@
                         <td class="text-center"><span class=" date">{{ file.blob.creation }}</span></td>
                         <td>
                             {% if user==collective %}
-                                <a href="/delete/{{file.key().id()}}" class="btn btn-danger btn-sm">Удалить</a>
+                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
                             {% endif %}
                         </td>
 
                     </tr>
                     {% else %}
-                    <tr><td colspan="7">Пока нет музыки</td></tr>
+                        <tr><td colspan="7">Пока нет музыки</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

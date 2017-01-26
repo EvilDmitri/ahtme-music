@@ -183,6 +183,7 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
 
 class GetHandler(blobstore_handlers.BlobstoreDownloadHandler):
     def get(self, blob_key, filename):
+        print 'IN GET'
         logging.info('GetHandler blob_key=%s filename=%s' % (blob_key, filename))
         blob_key = str(urllib.unquote(blob_key))
         record = UserMusic.get_by_id(int(blob_key))
@@ -210,8 +211,16 @@ class CollectiveHandler(BaseHandler):
         # files = sorted(UserMusic.query())
         # files = sorted(UserMusic.all())
         files = UserMusic.all()
-        files.filter('user =', collective)
-        files = sorted(files, key=self.getRecordDate, reverse=True)
+        print dir(files)
+        print files.count()
+        if files.count() > 1:
+            files.filter('user =', collective)
+            files = sorted(files, key=self.getRecordDate, reverse=True)
+
+        try:
+            user = self.user.auth_ids[0]
+        except:
+            user = None
 
         template_values = {
             # 'user': user,
@@ -219,10 +228,10 @@ class CollectiveHandler(BaseHandler):
             'upload_url': blobstore.create_upload_url('/upload'),
             'collective': collective,
             'collective_name': collectives[collective],
-            'user': self.user.auth_ids[0]
+            'user': user
         }
 
-        print self.user.auth_ids[0]
+        # print self.user.auth_ids[0]
 
         template = JINJA_ENVIRONMENT.get_template('templates/list.html')
         self.response.write(template.render(template_values))
@@ -230,6 +239,7 @@ class CollectiveHandler(BaseHandler):
 
 class DeleteHandler(webapp2.RequestHandler):
     def get(self, blob_key, collective):
+        print 'IN DELETE'
         try:
             blob_key = urllib.unquote(blob_key)
             record = UserMusic.get_by_id(int(blob_key))
