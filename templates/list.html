@@ -36,11 +36,16 @@
                         <td class="text-center"><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt text-center" aria-hidden="true"></span></a></td>
                         <td class="text-center">{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
                         <td class="text-center"><span class=" date">{{ file.blob.creation }}</span></td>
-                        <td>
+                        <td class="text-center">
                             {% if user==collective %}
                                 <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
                             {% endif %}
+                            {% if collective=="common" %}
+                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
+                            {% endif %}
+
                         </td>
+
 
                     </tr>
                     {% else %}

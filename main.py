@@ -41,7 +41,8 @@ collectives = {
     'smirnov': 'Смирнов',
     'oxana': 'Оксана',
     'jelena': 'Елена',
-    'irena': 'Ирена'
+    'irena': 'Ирена',
+    'common': 'Общая'
 
 
 }
@@ -211,8 +212,6 @@ class CollectiveHandler(BaseHandler):
         # files = sorted(UserMusic.query())
         # files = sorted(UserMusic.all())
         files = UserMusic.all()
-        print dir(files)
-        print files.count()
         if files.count() > 1:
             files.filter('user =', collective)
             files = sorted(files, key=self.getRecordDate, reverse=True)
