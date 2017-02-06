@@ -22,7 +22,11 @@
                         <th class="text-center">Скачать</th>
                         <th class="text-center">Размер</th>
                         <th class="text-center">Загружен</th>
-                        <th class="text-center">&nbsp;</th>
+
+                        {% if user==collective or collective=="common" %}
+                            <th class="text-center">Удалить</th>
+                        {% endif %}
+
 
 
                     </tr>
@@ -36,15 +40,20 @@
                         <td class="text-center"><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt text-center" aria-hidden="true"></span></a></td>
                         <td class="text-center">{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
                         <td class="text-center"><span class=" date">{{ file.blob.creation }}</span></td>
-                        <td class="text-center">
-                            {% if user==collective %}
-                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
-                            {% endif %}
-                            {% if collective=="common" %}
-                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
-                            {% endif %}
 
-                        </td>
+                        {% if user==collective %}
+                            <td class="text-center">
+                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
+                            </td>
+                        {% endif %}
+
+                        {% if collective=="common" %}
+                            <td class="text-center">
+                                <a href="/delete/{{file.key().id()}}/{{collective}}" class="btn btn-danger btn-sm">Удалить</a>
+                            </td>
+                        {% endif %}
+
+
 
 
                     </tr>
@@ -56,10 +65,12 @@
             </div>
 
 
+            {% if user==collective or collective=="common" %}
             <div class="col-md-4 col-sm-4 col-xs-6">
                 <div><br></div>
                 <div id="fileuploader">Upload</div>
             </div>
+            {% endif %}
 
         </div>
 </div>

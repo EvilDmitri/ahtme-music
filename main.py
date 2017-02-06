@@ -278,7 +278,7 @@ class LoginHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def get(self):
         self.auth.unset_session()
-        self.redirect(self.uri_for('home'))
+        self.redirect('/')
 
 
 class SignupHandler(BaseHandler):
@@ -287,16 +287,16 @@ class SignupHandler(BaseHandler):
 
     def post(self):
         user_name = self.request.get('username')
-        email = self.request.get('email')
-        name = self.request.get('name')
+        # email = self.request.get('email')
+        name = self.request.get('username')
         password = self.request.get('password')
-        last_name = self.request.get('lastname')
+        # last_name = self.request.get('lastname')
 
-        unique_properties = ['email_address']
+        unique_properties = ['name']
         user_data = self.user_model.create_user(user_name,
                                                 unique_properties,
-                                                email_address=email, name=name, password_raw=password,
-                                                last_name=last_name, verified=True)
+                                                name=name, password_raw=password,
+                                                verified=True)
         if not user_data[0]:  # user_data is a tuple
             self.display_message('Unable to create user for email %s because of \
         duplicate keys %s' % (user_name, user_data[1]))
