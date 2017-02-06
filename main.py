@@ -305,6 +305,7 @@ class SignupHandler(BaseHandler):
         user = user_data[1]
         # user_id = user.get_id()
         user.put()
+        self.redirect('/signup')
 
         # token = self.user_model.create_signup_token(user_id)
         #
