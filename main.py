@@ -5,6 +5,8 @@ import os.path
 import urllib
 import logging
 
+from mutagen.mp3 import MP3
+
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from google.appengine.ext import blobstore, db
@@ -161,6 +163,13 @@ class MainHandler(BaseHandler):
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         collective = self.request.get('collective')
+        user = users.get_current_user().user_id()
+        print user, ' = ', collective
+
+        f = self.get_uploads()[0]
+        audio = MP3(f)
+        print audio.info.length
+
         try:
             upload = self.get_uploads()[0]
             user_music = UserMusic(
@@ -170,7 +179,6 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
                 blob=upload,
                 blob_key=upload.key())
 
-            print user_music
             user_music.put()
             self.redirect('/collective/' + collective)
         except:
