@@ -6,6 +6,7 @@ import urllib
 import logging
 
 from mutagen.mp3 import MP3
+import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -48,6 +49,10 @@ collectives = {
 
 
 }
+
+
+def secs_to_minutes(secs):
+    return datetime.datetime.fromtimestamp(secs).strftime('%M:%S')
 
 
 def user_required(handler):
@@ -142,6 +147,7 @@ class UserMusic(db.Model):
     user = db.StringProperty()
     blob = blobstore.BlobReferenceProperty()
     blob_key = ndb.BlobKeyProperty()
+    length = db.StringProperty()
 
 
 # class UserMusic(ndb.Model):
@@ -163,21 +169,22 @@ class MainHandler(BaseHandler):
 class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         collective = self.request.get('collective')
-        user = users.get_current_user().user_id()
-        print user, ' = ', collective
-
-        f = self.get_uploads()[0]
-        audio = MP3(f)
-        print audio.info.length
+        # user = users.get_current_user().user_id()
+        # print user, ' = ', collective
 
         try:
             upload = self.get_uploads()[0]
+            audio = MP3(upload.open())
+            length = int(audio.info.length)
+            print length
+
             user_music = UserMusic(
                 user=collective,
                 # test='test field',
                 # user=users.get_current_user().user_id(),
                 blob=upload,
-                blob_key=upload.key())
+                blob_key=upload.key(),
+                length=str(secs_to_minutes(length)))
 
             user_music.put()
             self.redirect('/collective/' + collective)

@@ -13,13 +13,14 @@
 
             <div class="col-md-8 col-sm-8 col-xs-6">
                 <div>
-                    <h1 id="">Музыка - {{collective_name}}</h1>
+                    <h1 id="">{{collective_name}}</h1>
                 </div>
                 <table class="table table-bordered table-striped" >
                 <thead>
                     <tr>
                         <th class="text-center">Название</th>
                         <th class="text-center">Скачать</th>
+                        <th class="text-center">Длительность</th>
                         <th class="text-center">Размер</th>
                         <th class="text-center">Загружен</th>
 
@@ -38,6 +39,7 @@
                     <tr>
                         <td  class="song" onclick="play('{{ url }}')"><a >{{ file.blob.filename}}</a></td>
                         <td class="text-center"><a href="{{ url }}" download><span class="glyphicon glyphicon-download-alt text-center" aria-hidden="true"></span></a></td>
+                        <td class="text-center">{{ file.length }}</td>
                         <td class="text-center">{{ ((((((file.blob.size)|float)) / 1024 / 1024)|round(3)) |string) + ' Mb'}}</td>
                         <td class="text-center"><span class=" date">{{ file.blob.creation }}</span></td>
 
