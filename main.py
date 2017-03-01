@@ -176,7 +176,6 @@ class UploadHandler(blobstore_handlers.BlobstoreUploadHandler):
             upload = self.get_uploads()[0]
             audio = MP3(upload.open())
             length = int(audio.info.length)
-            print length
 
             user_music = UserMusic(
                 user=collective,
@@ -333,6 +332,18 @@ class SignupHandler(BaseHandler):
         # self.display_message(msg.format(url=verification_url))
 
 
+class MeasureHandler(BaseHandler):
+    def get(self):
+        files = UserMusic.all()
+        for f in files:
+            if f.length is None:
+                audio = MP3(f.blob.open())
+                length = int(audio.info.length)
+                f.length = str(secs_to_minutes(length))
+                f.put()
+        self.redirect('/')
+
+
 config = {
     'webapp2_extras.auth': {
         'user_model': 'models.User',
@@ -352,6 +363,7 @@ app = webapp2.WSGIApplication([('/', MainHandler),
                                ('/signup', SignupHandler),
                                ('/login', LoginHandler),
                                ('/logout', LogoutHandler),
+                               # ('/measure', MeasureHandler),
                                # Obsolete route handler (retains backward compatibility)
                                # See also app.yaml config "url: /get/(.*?)/(.*)"
                                ('/get/([^/]+)?/([^/]+)?', GetHandler)], debug=True, config=config)
