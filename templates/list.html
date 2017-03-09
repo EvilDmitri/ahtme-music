@@ -15,7 +15,7 @@
                 <div>
                     <h1 id="">{{collective_name}}</h1>
                 </div>
-                <table class="table table-bordered table-striped" >
+                <table id="RecordsTable" class="table table-bordered table-striped tablesorter" >
                 <thead>
                     <tr>
                         <th class="text-center">Название</th>
@@ -132,7 +132,18 @@
 
 
 {% block tail_script %}
+
+    <script type="text/javascript" src="/static/js/jquery.tablesorter.min.js"></script>
+
+
     <script>
+        $(document).ready(function()
+            {
+                $("#RecordsTable").tablesorter();
+            }
+        );
+
+
         $(document).ready(function()
         {
             $("#fileuploader").uploadFile({
